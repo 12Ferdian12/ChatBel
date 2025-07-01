@@ -1,13 +1,23 @@
-import React,{useState,useEffect,useRef} from 'react';
-import MessageCard from './MessageCard';
-import MessageInput from './MessageInput';
-import { addDoc, collection,doc, serverTimestamp,onSnapshot,query,where,orderBy,updateDoc } from 'firebase/firestore';
-import { firestore } from '@/lib/firebase';
+import React, { useState, useEffect, useRef } from "react";
+import MessageCard from "./MessageCard";
+import MessageInput from "./MessageInput";
+import {
+  addDoc,
+  collection,
+  doc,
+  serverTimestamp,
+  onSnapshot,
+  query,
+  where,
+  orderBy,
+  updateDoc,
+} from "firebase/firestore";
+import { firestore } from "@/lib/firebase";
 
-function ChatRoom({ user ,selectedChatroom}) {
-  const me = selectedChatroom?.myData
-  const other = selectedChatroom?.otherData
-  const chatRoomId = selectedChatroom?.id
+function ChatRoom({ selectedChatroom }) {
+  const me = selectedChatroom?.myData;
+  const other = selectedChatroom?.otherData;
+  const chatRoomId = selectedChatroom?.id;
 
   const [message, setMessage] = useState([]);
   const [messages, setMessages] = useState([]);
@@ -17,78 +27,99 @@ function ChatRoom({ user ,selectedChatroom}) {
   useEffect(() => {
     // Scroll to the bottom when messages change
     if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight;
     }
   }, [messages]);
 
-//get messages 
-useEffect(() => {
-  if(!chatRoomId) return;
-  const unsubscribe = onSnapshot(
-    query(collection(firestore, 'messages'),where("chatRoomId","==",chatRoomId),orderBy('time', 'asc')),
-    (snapshot) => {
-      const messages = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      //console.log(messages);
-      setMessages(messages);
-    }
-  );
+  //get messages
+  useEffect(() => {
+    if (!chatRoomId) return;
+    const unsubscribe = onSnapshot(
+      query(
+        collection(firestore, "messages"),
+        where("chatRoomId", "==", chatRoomId)
+      ),
+      (snapshot) => {
+        const messages = snapshot.docs
+          .map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }))
+          .sort((a, b) => {
+            // Sort by time ascending (oldest first)
+            if (!a.time || !b.time) return 0;
+            return a.time.toMillis() - b.time.toMillis();
+          });
+        //console.log(messages);
+        setMessages(messages);
+      }
+    );
 
-  return unsubscribe;
-}, [chatRoomId]);
+    return unsubscribe;
+  }, [chatRoomId]);
 
-//put messages in db
- const sendMessage = async () => {
-    const messagesCollection = collection(firestore, 'messages');
+  //put messages in db
+  const sendMessage = async () => {
+    const messagesCollection = collection(firestore, "messages");
     // Check if the message is not empty
-  if (message == '' && image == '') {
-    return;
-  }
+    if (message == "" && image == "") {
+      return;
+    }
 
-  try {
-    // Add a new message to the Firestore collection
-    const newMessage = {
-      chatRoomId:chatRoomId,
-      sender: me.id,
-      content: message,
-      time: serverTimestamp(),
-      image: image,
-    };
+    try {
+      // Add a new message to the Firestore collection
+      const newMessage = {
+        chatRoomId: chatRoomId,
+        sender: me.id,
+        content: message,
+        time: serverTimestamp(),
+        image: image,
+      };
+      console.log(newMessage);
+      await addDoc(messagesCollection, newMessage);
+      setMessage("");
+      setImage("");
+      //send to chatroom by chatroom id and update last message
+      const chatroomRef = doc(firestore, "chatrooms", chatRoomId);
+      await updateDoc(chatroomRef, {
+        lastMessage: message ? message : "Image",
+      });
 
-    await addDoc(messagesCollection, newMessage);
-    setMessage('');
-    setImage('');
-    //send to chatroom by chatroom id and update last message
-    const chatroomRef = doc(firestore, 'chatrooms', chatRoomId);
-    await updateDoc(chatroomRef, { lastMessage: message ? message : "Image" });
+      // Clear the input field after sending the message
+    } catch (error) {
+      console.error("Error sending message:", error.message);
+    }
 
-    // Clear the input field after sending the message
-    
-  } catch (error) {
-    console.error('Error sending message:', error.message);
-  }
-
-  // Scroll to the bottom after sending a message
-  if (messagesContainerRef.current) {
-    messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-  }
-    
-}
-
+    // Scroll to the bottom after sending a message
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight;
+    }
+  };
 
   return (
-    <div className='flex flex-col h-screen'>
+    <div className="flex flex-col h-[90vh] w-full bg-white dark:bg-gray-800">
       {/* Messages container with overflow and scroll */}
-      <div ref={messagesContainerRef} className='flex-1 overflow-y-auto p-10'>
+      <div ref={messagesContainerRef} className="flex-1 overflow-y-scroll p-10">
         {messages?.map((message) => (
-          <MessageCard key={message.id} message={message} me={me} other={other}/>
+          <MessageCard
+            key={message.id}
+            message={message}
+            me={me}
+            other={other}
+          />
         ))}
       </div>
 
       {/* Input box at the bottom */}
-      <MessageInput sendMessage={sendMessage} message={message} setMessage={setMessage} image={image} setImage={setImage}/>
+      <MessageInput
+        sendMessage={sendMessage}
+        message={message}
+        setMessage={setMessage}
+        image={image}
+        setImage={setImage}
+      />
     </div>
   );
 }
