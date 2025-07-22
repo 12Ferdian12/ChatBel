@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "ajv": "^8.17.1",
+    "axios": "^1.10.0",
     "emoji-picker-react": "^4.5.16",
     "firebase": "^10.7.0",
     "moment": "^2.29.4",

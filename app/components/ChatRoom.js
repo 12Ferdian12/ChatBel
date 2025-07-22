@@ -13,6 +13,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { firestore } from "@/lib/firebase";
+import axios from "axios";
 
 function ChatRoom({ selectedChatroom }) {
   const me = selectedChatroom?.myData;
@@ -61,37 +62,39 @@ function ChatRoom({ selectedChatroom }) {
 
   //put messages in db
   const sendMessage = async () => {
-    const messagesCollection = collection(firestore, "messages");
     // Check if the message is not empty
-    if (message == "" && image == "") {
+    if (message === "") {
       return;
     }
 
+    const newMessage = {
+      chatRoomId: chatRoomId,
+      sender: me.id,
+      content: message,
+      // time: new Date().toISOString(),
+    };
+
     try {
-      // Add a new message to the Firestore collection
-      const newMessage = {
-        chatRoomId: chatRoomId,
-        sender: me.id,
-        content: message,
-        time: serverTimestamp(),
-        image: image,
-      };
-      console.log(newMessage);
-      await addDoc(messagesCollection, newMessage);
-      setMessage("");
-      setImage("");
-      //send to chatroom by chatroom id and update last message
+      // 2. Kirim ke API eksternal
+      await axios.post(
+        "https://n8n-krjfuxilwis5.cica.sumopod.my.id/webhook-test/abc44ece-f7e2-49f9-aa11-f23611c72b98",
+        newMessage
+      );
+
+      // 3. Update chatroom last message
       const chatroomRef = doc(firestore, "chatrooms", chatRoomId);
       await updateDoc(chatroomRef, {
         lastMessage: message ? message : "Image",
       });
 
-      // Clear the input field after sending the message
+      // 4. Bersihkan input
+      setMessage("");
+      setImage("");
     } catch (error) {
       console.error("Error sending message:", error.message);
     }
 
-    // Scroll to the bottom after sending a message
+    // Scroll ke bawah
     if (messagesContainerRef.current) {
       messagesContainerRef.current.scrollTop =
         messagesContainerRef.current.scrollHeight;
