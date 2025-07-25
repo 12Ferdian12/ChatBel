@@ -71,13 +71,14 @@ function ChatRoom({ selectedChatroom }) {
       chatRoomId: chatRoomId,
       sender: me.id,
       content: message,
+      emailSender: me.email,
       // time: new Date().toISOString(),
     };
 
     try {
       // 2. Kirim ke API eksternal
       await axios.post(
-        "https://n8n-krjfuxilwis5.cica.sumopod.my.id/webhook-test/abc44ece-f7e2-49f9-aa11-f23611c72b98",
+        "https://n8n-krjfuxilwis5.cica.sumopod.my.id/webhook/abc44ece-f7e2-49f9-aa11-f23611c72b98",
         newMessage
       );
 

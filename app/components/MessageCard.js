@@ -1,5 +1,15 @@
 import React from "react";
 import moment from "moment";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize from "rehype-sanitize";
+import { InlineMath, BlockMath } from "react-katex";
+
+import "katex/dist/katex.min.css";
+
+// import { marked } from "marked";
 
 function MessageCard({ message, me }) {
   const isMessageFromMe = message.sender === me.id;
@@ -47,7 +57,24 @@ function MessageCard({ message, me }) {
         {message.image && (
           <img src={message.image} className="max-h-60 w-60 mb-4" />
         )}
-        <p>{message.content}</p>
+        {/* <div
+          className="prose max-w-none"
+          dangerouslySetInnerHTML={{ __html: marked(message.content) }}
+        /> */}
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm, remarkMath]}
+          rehypePlugins={[rehypeRaw, rehypeSanitize]}
+          components={{
+            math({ value }) {
+              return <BlockMath math={value ?? ""} />;
+            },
+            inlineMath({ value }) {
+              return <InlineMath math={value ?? ""} />;
+            },
+          }}
+        >
+          {message.content}
+        </ReactMarkdown>
         <div className="text-xs text-gray-200">
           {formatTimeAgo(message.time)}
         </div>

@@ -16,6 +16,7 @@ import {
 import { useRouter } from "next/navigation";
 import Users from "./components/Users";
 import ChatRoom from "./components/ChatRoom";
+import "katex/dist/katex.min.css";
 
 function page() {
   const auth = getAuth(app);
