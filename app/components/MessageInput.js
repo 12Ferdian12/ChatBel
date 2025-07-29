@@ -9,7 +9,14 @@ import {
 import { app } from "@/lib/firebase";
 import EmojiPicker from "emoji-picker-react";
 
-function MessageInput({ sendMessage, message, setMessage, image, setImage }) {
+function MessageInput({
+  sendMessage,
+  message,
+  setMessage,
+  image,
+  setImage,
+  isSending,
+}) {
   const [file, setFile] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -84,12 +91,19 @@ function MessageInput({ sendMessage, message, setMessage, image, setImage }) {
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         type="text"
+        disabled={isSending}
         placeholder="Type a message..."
         className="flex-1 border-none p-2 outline-none"
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && !isSending) {
+            sendMessage();
+          }
+        }}
       />
 
       <FaPaperPlane
         onClick={() => sendMessage()}
+        disabled={isSending}
         className="text-blue-500 cursor-pointer ml-2"
       />
 

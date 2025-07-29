@@ -24,6 +24,8 @@ function ChatRoom({ selectedChatroom }) {
   const [messages, setMessages] = useState([]);
   const messagesContainerRef = useRef(null);
   const [image, setImage] = useState(null);
+  const [isThinking, setIsThinking] = useState(false);
+  const [isSending, setIsSending] = useState(false);
 
   useEffect(() => {
     // Scroll to the bottom when messages change
@@ -62,40 +64,44 @@ function ChatRoom({ selectedChatroom }) {
 
   //put messages in db
   const sendMessage = async () => {
-    // Check if the message is not empty
-    if (message === "") {
-      return;
-    }
+    if (message === "" || isSending) return;
 
     const newMessage = {
       chatRoomId: chatRoomId,
       sender: me.id,
       content: message,
       emailSender: me.email,
-      // time: new Date().toISOString(),
     };
 
     try {
-      // 2. Kirim ke API eksternal
+      // Set AI thinking
+      setIsSending(true);
+      setIsThinking(true);
+
+      // Send to external API
       await axios.post(
         "https://n8n-krjfuxilwis5.cica.sumopod.my.id/webhook/abc44ece-f7e2-49f9-aa11-f23611c72b98",
         newMessage
       );
 
-      // 3. Update chatroom last message
+      // Update chatroom last message
       const chatroomRef = doc(firestore, "chatrooms", chatRoomId);
       await updateDoc(chatroomRef, {
-        lastMessage: message ? message : "Image",
+        lastMessage: message || "Image",
       });
 
-      // 4. Bersihkan input
+      // Clear input
       setMessage("");
       setImage("");
     } catch (error) {
       console.error("Error sending message:", error.message);
+    } finally {
+      // Turn off thinking
+      setIsThinking(false);
+      setIsSending(false);
     }
 
-    // Scroll ke bawah
+    // Scroll to bottom
     if (messagesContainerRef.current) {
       messagesContainerRef.current.scrollTop =
         messagesContainerRef.current.scrollHeight;
@@ -114,6 +120,9 @@ function ChatRoom({ selectedChatroom }) {
             other={other}
           />
         ))}
+        {isThinking && (
+          <div className="text-gray-500 italic mt-2">AI is thinking...</div>
+        )}
       </div>
 
       {/* Input box at the bottom */}
@@ -123,6 +132,7 @@ function ChatRoom({ selectedChatroom }) {
         setMessage={setMessage}
         image={image}
         setImage={setImage}
+        isSending={isSending}
       />
     </div>
   );
