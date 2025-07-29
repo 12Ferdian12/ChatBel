@@ -1,4 +1,5 @@
 "use client";
+import Loading from "./components/Loading";
 import React, { useEffect, useState } from "react";
 import { app, firestore } from "@/lib/firebase";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
@@ -25,9 +26,10 @@ function page() {
   const [selectedChatroom, setSelectedChatroom] = useState(null);
   const [loading, setLoading] = useState(false);
   const [userChatrooms, setUserChatrooms] = useState([]);
-
+  // return <Loading message="Authenticating..." />;
   useEffect(() => {
     // Use onAuthStateChanged to listen for changes in authentication state
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         const docRef = doc(firestore, "users", user.uid);
@@ -77,8 +79,7 @@ function page() {
     createChat(user);
   }, [user]);
 
-  // Early return after all hooks
-  if (user == null) return <div className="text-4xl">Loading...</div>;
+  if (user == null) return <Loading message="Authenticating..." />;
 
   // Logout function
   const logoutClick = () => {
