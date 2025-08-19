@@ -3,13 +3,9 @@ import moment from "moment";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
-import rehypeRaw from "rehype-raw";
-import rehypeSanitize from "rehype-sanitize";
-import { InlineMath, BlockMath } from "react-katex";
+import rehypeKatex from "rehype-katex";
 
 import "katex/dist/katex.min.css";
-
-// import { marked } from "marked";
 
 function MessageCard({ message, me }) {
   const isMessageFromMe = message.sender === me.id;
@@ -20,6 +16,57 @@ function MessageCard({ message, me }) {
     return momentDate.fromNow();
   };
 
+  // Preprocess LaTeX content for proper rendering
+  const preprocessLatex = (content) => {
+    if (!content) return content;
+
+    let processedContent = content;
+
+    // Replace block math \[ and \] with $$ (opening and closing separately)
+    // processedContent = processedContent.replace(/\\\[/g, "$$");
+    // processedContent = processedContent.replace(/\\\]/g, "$$");
+    // Replace inline math \( ... \) with $ ... $
+    processedContent = processedContent.replace(
+      /\\\(([\s\S]*?)\\\)/g,
+      "$$$1$$"
+    );
+
+    processedContent = processedContent.replace(
+      /\\\[([\s\S]*?)\\\]/g,
+      "$$$$$1$$$"
+    );
+
+    // Replace LaTeX commands with double backslash
+    // Replace \text{...} with just ...
+    // processedContent = processedContent.replace(/\\text\{([^}]*)\}/g, "$1");
+    processedContent = processedContent.replace(/\\frac/g, "\\\\frac");
+    processedContent = processedContent.replace(/\\times/g, "\\\\times");
+    processedContent = processedContent.replace(/\\sqrt/g, "\\\\sqrt");
+    processedContent = processedContent.replace(/\\approx/g, "\\\\approx");
+    processedContent = processedContent.replace(/\\cdot/g, "\\\\cdot");
+    processedContent = processedContent.replace(/\\sin/g, "\\\\sin");
+    processedContent = processedContent.replace(/\\cos/g, "\\\\cos");
+    processedContent = processedContent.replace(/\\tan/g, "\\\\tan");
+    processedContent = processedContent.replace(/\\theta/g, "\\\\theta");
+    processedContent = processedContent.replace(/\\pi/g, "\\\\pi");
+    processedContent = processedContent.replace(/\\sum/g, "\\\\sum");
+    processedContent = processedContent.replace(/\\int/g, "\\\\int");
+    processedContent = processedContent.replace(/\\infty/g, "\\\\infty");
+    processedContent = processedContent.replace(/\\alpha/g, "\\\\alpha");
+    processedContent = processedContent.replace(/\\beta/g, "\\\\beta");
+    processedContent = processedContent.replace(/\\gamma/g, "\\\\gamma");
+    processedContent = processedContent.replace(/\\delta/g, "\\\\delta");
+    processedContent = processedContent.replace(/\\epsilon/g, "\\\\epsilon");
+    processedContent = processedContent.replace(/\\lambda/g, "\\\\lambda");
+    processedContent = processedContent.replace(/\\mu/g, "\\\\mu");
+    processedContent = processedContent.replace(/\\sigma/g, "\\\\sigma");
+    processedContent = processedContent.replace(/\\omega/g, "\\\\omega");
+
+    return processedContent;
+  };
+
+  // console.log("MessageCard rendered", message.content);
+
   return (
     <div
       key={message.id}
@@ -27,55 +74,61 @@ function MessageCard({ message, me }) {
         isMessageFromMe ? "justify-end" : "justify-start"
       }`}
     >
-      {/* Avatar on the left or right based on the sender */}
-      <div className={`w-10 h-10 ${isMessageFromMe ? "ml-2 mr-2" : "mr-2"}`}>
-        {isMessageFromMe && (
+      {/* Avatar */}
+      {!isMessageFromMe && (
+        <div
+          className={`w-10 h-10 min-w-[2.5rem] min-h-[2.5rem] flex-shrink-0 mr-2`}
+        >
           <img
-            className="w-full h-full object-cover rounded-full"
-            src={me.avatarUrl}
-            alt="Avatar"
-          />
-        )}
-        {!isMessageFromMe && (
-          // bot avatar
-          <img
-            className="w-full h-full object-cover rounded-full"
+            className="object-cover w-full h-full rounded-full"
             src={
               "https://media.istockphoto.com/id/1329751110/vector/chatbot-concept-dialogue-help-service.jpg?s=612x612&w=0&k=20&c=5aLsLEghDrDRjZ_bu-kAaSLU5dVv56g688HlCtR_TYA="
             }
             alt="Avatar"
           />
-        )}
-      </div>
+        </div>
+      )}
 
-      {/* Message bubble on the right or left based on the sender */}
+      {/* Message bubble */}
       <div
-        className={` text-white p-2 rounded-md ${
-          isMessageFromMe ? "bg-blue-500 self-end" : "bg-[#19D39E] self-start"
+        className={`py-2 px-3 rounded-xl max-w-[80%] ${
+          isMessageFromMe
+            ? "bg-blue-500 text-white self-end"
+            : "bg-[#19D39E] text-black self-start"
         }`}
       >
         {message.image && (
-          <img src={message.image} className="max-h-60 w-60 mb-4" />
+          <img src={message.image} className="mb-4 rounded max-h-60 w-60" />
         )}
-        {/* <div
-          className="prose max-w-none"
-          dangerouslySetInnerHTML={{ __html: marked(message.content) }}
-        /> */}
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm, remarkMath]}
-          rehypePlugins={[rehypeRaw, rehypeSanitize]}
-          components={{
-            math({ value }) {
-              return <BlockMath math={value ?? ""} />;
-            },
-            inlineMath({ value }) {
-              return <InlineMath math={value ?? ""} />;
-            },
-          }}
-        >
-          {message.content}
-        </ReactMarkdown>
-        <div className="text-xs text-gray-200">
+        <div className="prose-sm prose break-words max-w-none prose-invert">
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm, remarkMath]}
+            rehypePlugins={[rehypeKatex]}
+            components={{
+              code({ inline, children, className }) {
+                return inline ? (
+                  <code className="px-1 text-yellow-300 bg-gray-800 rounded">
+                    {children}
+                  </code>
+                ) : (
+                  <pre className="p-3 overflow-auto text-sm text-green-400 bg-black rounded">
+                    <code>{children}</code>
+                  </pre>
+                );
+              },
+            }}
+          >
+            {preprocessLatex(message.content)}
+            {/* {message.content} */}
+          </ReactMarkdown>
+          {/* <ReactMarkdown
+            remarkPlugins={[remarkGfm, remarkMath]}
+            rehypePlugins={[rehypeKatex]}
+          >
+            {"$$ L = \\frac{1}{2} \\rho v^2 S C_L $$"}
+          </ReactMarkdown> */}
+        </div>
+        <div className="mt-1 text-xs text-gray-200">
           {formatTimeAgo(message.time)}
         </div>
       </div>
