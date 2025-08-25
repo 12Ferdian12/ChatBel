@@ -85,14 +85,14 @@ function page() {
   };
   console.log(avatarUrl);
   return (
-    <div className="flex justify-center items-center h-screen font-primary p-10 m-2">
+    <div className="flex bg-LW justify-center    items-center h-screen font-primary p-10 m-2">
       {/*form*/}
       <form
         onSubmit={handleSubmit}
-        className="space-y-4 w-full max-w-2xl shadow-lg p-10"
+        className="space-y-4 w-full bg-DB rounded-xl max-w-2xl shadow-lg p-10"
       >
-        <h1 className="font-secondary text-xl text-center font-semibold text-[#0b3a65ff]">
-          CHAT<span className="font-bold text-[#eeab63ff]">B3LL</span>
+        <h1 className="font-secondary text-xl text-center font-semibold text-CR">
+          Chat<span className="font-bold text-[#eeab63ff]">-</span>B3LL
         </h1>
 
         {/* Display the avatar and refresh button */}
@@ -106,12 +106,12 @@ function page() {
         {/*name*/}
         <div>
           <label className="label">
-            <span className="text-base label-text">Name</span>
+            <span className="text-base text-CR label-text">Name</span>
           </label>
           <input
             type="text"
             placeholder="Name"
-            className="w-full input input-bordered"
+            className="w-full input bg-LB input-bordered"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
@@ -121,12 +121,12 @@ function page() {
         {/*email*/}
         <div>
           <label className="label">
-            <span className="text-base label-text">Email</span>
+            <span className="text-base text-CR label-text">Email</span>
           </label>
           <input
             type="text"
             placeholder="Email"
-            className="w-full input input-bordered"
+            className="w-full input bg-LB input-bordered"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -136,12 +136,12 @@ function page() {
         {/*password*/}
         <div>
           <label className="label">
-            <span className="text-base label-text">Password</span>
+            <span className="text-base text-CR label-text">Password</span>
           </label>
           <input
             type="password"
             placeholder="Enter Password"
-            className="w-full input input-bordered"
+            className="w-full bg-LB input input-bordered"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -153,12 +153,14 @@ function page() {
         {/*confirm password*/}
         <div>
           <label className="label">
-            <span className="text-base label-text">Confirm Password</span>
+            <span className="text-base  text-CR label-text">
+              Confirm Password
+            </span>
           </label>
           <input
             type="password"
             placeholder="Confirm Password"
-            className="w-full input input-bordered"
+            className="w-full input bg-LB input-bordered"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
@@ -168,10 +170,7 @@ function page() {
         </div>
 
         <div>
-          <button
-            type="submit"
-            className="btn btn-block bg-[#0b3a65ff] text-white"
-          >
+          <button type="submit" className="btn btn-block bg-CR text-white">
             {loading ? (
               <span className="loading loading-spinner loading-sm"></span>
             ) : (
@@ -179,9 +178,8 @@ function page() {
             )}
           </button>
         </div>
-
+        <p className="text-CR">Already have an account?</p>
         <span>
-          Already have an account?{" "}
           <Link
             href="/login"
             className="text-blue-600 hover:text-blue-800 hover:underline"

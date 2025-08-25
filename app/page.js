@@ -149,16 +149,14 @@ function page() {
   return (
     <div className="flex flex-col h-screen">
       {/* Navbar */}
-      <nav className="bg-white shadow-sm border-b p-4 flex justify-between items-center">
+      <nav className="bg-DB shadow-sm border-b-LB p-4 flex justify-between items-center">
         <div className="flex items-center">
-          <h1 className="text-xl font-semibold text-gray-800">Chat App</h1>
+          <h1 className="text-xl font-semibold text-LW">Chat App</h1>
         </div>
         <div className="flex items-center space-x-4">
-          <span className="text-gray-600">
-            Welcome, {user?.name || user?.email}
-          </span>
+          <span className="text-LW">Welcome, {user?.name || user?.email}</span>
           <button
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition-colors"
+            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-3xl transition-colors"
             onClick={logoutClick}
           >
             Logout

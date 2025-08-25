@@ -77,7 +77,7 @@ function MessageInput({
   };
 
   return (
-    <div className="relative flex items-center p-4 border-t border-gray-200">
+    <div className="relative bg-DB flex items-center p-4 border-t-LB border-DB border-t-2">
       {/* <FaPaperclip
         onClick={() => document.getElementById('my_modal_3').showModal()}
         className={`${image ? "text-blue-500":"text-gray-500"} mr-2 cursor-pointer`}
@@ -93,7 +93,7 @@ function MessageInput({
         type="text"
         disabled={isSending}
         placeholder="Type a message..."
-        className="flex-1 border-none p-2 outline-none"
+        className="flex-1 border-none bg-LB text-LW p-2 outline-none"
         onKeyDown={(e) => {
           if (e.key === "Enter" && !isSending) {
             sendMessage();
@@ -104,7 +104,7 @@ function MessageInput({
       <FaPaperPlane
         onClick={() => sendMessage()}
         disabled={isSending}
-        className="text-blue-500 cursor-pointer ml-2"
+        className="text-CR cursor-pointer ml-2"
       />
 
       {/* {showEmojiPicker && (

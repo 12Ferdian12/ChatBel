@@ -93,8 +93,8 @@ function MessageCard({ message, me }) {
       <div
         className={`py-2 px-3 rounded-xl max-w-[80%] ${
           isMessageFromMe
-            ? "bg-blue-500 text-white self-end"
-            : "bg-[#19D39E] text-black self-start"
+            ? "bg-CR text-DB shadow-md self-end"
+            : "bg-CR text-DB shadow-md self-start"
         }`}
       >
         {message.image && (
@@ -128,7 +128,7 @@ function MessageCard({ message, me }) {
             {"$$ L = \\frac{1}{2} \\rho v^2 S C_L $$"}
           </ReactMarkdown> */}
         </div>
-        <div className="mt-1 text-xs text-gray-200">
+        <div className="mt-1 text-xs text-DB">
           {formatTimeAgo(message.time)}
         </div>
       </div>

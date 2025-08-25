@@ -109,7 +109,7 @@ function ChatRoom({ selectedChatroom }) {
   };
 
   return (
-    <div className="flex flex-col h-[90vh] w-full bg-white dark:bg-gray-800">
+    <div className="flex flex-col h-[90vh] w-full bg-LW text-DB">
       {/* Messages container with overflow and scroll */}
       <div
         ref={messagesContainerRef}
