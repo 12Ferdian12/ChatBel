@@ -94,11 +94,12 @@ function MessageInput({
         disabled={isSending}
         placeholder="Type a message..."
         className="flex-1 border-none bg-LB text-LW p-2 outline-none"
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && !isSending) {
-            sendMessage();
-          }
-        }}
+        // onKeyDown={(e) => {
+        //   if (e.key === "Enter" && !isSending) {
+        //     e.preventDefault();
+        //     sendMessage();
+        //   }
+        // }}
       />
 
       <FaPaperPlane
