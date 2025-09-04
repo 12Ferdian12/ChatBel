@@ -81,9 +81,7 @@ function MessageCard({ message, me }) {
         >
           <img
             className="object-cover w-full h-full rounded-full"
-            src={
-              "https://media.istockphoto.com/id/1329751110/vector/chatbot-concept-dialogue-help-service.jpg?s=612x612&w=0&k=20&c=5aLsLEghDrDRjZ_bu-kAaSLU5dVv56g688HlCtR_TYA="
-            }
+            src={"../ICON.png"}
             alt="Avatar"
           />
         </div>

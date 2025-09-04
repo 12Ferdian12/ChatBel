@@ -7,6 +7,11 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata = {
   title: "Chat-B3LL",
   description: "A Chat Application",
+  icons: {
+    icon: "/ICON.png",
+    shortcut: "/ICON.png",
+    apple: "/ICON.png",
+  },
 };
 
 export default function RootLayout({ children }) {
